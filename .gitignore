@@ -1,0 +1,38 @@
+# Python environments and cache
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Downloaded datasets and generated model artifacts
+/data/
+/models/*
+!/models/README.md
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.onnx
+*.ckpt
+*.pkl
+
+# Local runs, scratch work, duplicate copy, and archives
+/runs/
+/outputs/
+/scratch/
+/NLP_project/
+*.zip
+
+# Editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

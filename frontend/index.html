@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SatyaCheck AI — Indian Misinformation & Fake News Detector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="ambient-glow saffron"></div>
+    <div class="ambient-glow green"></div>
+    <div class="ambient-glow cyan"></div>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-badge">🇮🇳 AI 2.0</div>
+                <div class="brand-text">
+                    <h1>Satya<span>Check</span></h1>
+                    <p>Indian Fake News & Misinformation Radar</p>
+                </div>
+            </div>
+            <div class="nav-stats">
+                <div class="stat-chip">
+                    <span class="pulse-dot"></span>
+                    <span id="model-status">Engine: XLM-RoBERTa (100+ Langs)</span>
+                </div>
+                <div class="stat-chip accent">
+                    <span>Multilingual • Hindi • Hinglish</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Hero Search Section -->
+        <section class="hero-search-card glass-card">
+            <div class="search-title-wrap">
+                <h2>🔎 Search Live Indian News & Fact-Check Claims</h2>
+                <p>Search breaking news, viral rumors, government policies, or political claims across thousands of
+                    Indian outlets in real time.</p>
+            </div>
+
+            <div class="omni-search-box">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="live-search-input"
+                        placeholder="Search any news, claim, or topic... (e.g. 'RBI 500 rupee note', 'free mobile recharge scheme', 'Modi Cabinet', 'ISRO mission')"
+                        value="India Breaking News">
+                    <button class="clear-btn"
+                        onclick="document.getElementById('live-search-input').value=''; document.getElementById('live-search-input').focus();">✕</button>
+                </div>
+
+                <div class="search-options">
+                    <div class="opt-group">
+                        <label>Language:</label>
+                        <select id="search-lang">
+                            <option value="en" selected>English (India)</option>
+                            <option value="hi">हिन्दी (Hindi)</option>
+                        </select>
+                    </div>
+
+                    <div class="opt-group">
+                        <label>Articles:</label>
+                        <select id="search-limit">
+                            <option value="15">15 Articles</option>
+                            <option value="25" selected>25 Articles</option>
+                            <option value="50">50 Articles (Max)</option>
+                        </select>
+                    </div>
+
+                    <button class="primary-btn search-submit-btn" id="search-submit-btn" onclick="executeNewsSearch()">
+                        <span class="btn-text">🔍 Search & Verify</span>
+                        <div class="spinner hidden" id="search-spinner"></div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="trending-chips">
+                <span class="chip-label">🔥 Trending Topics:</span>
+                <button class="chip-btn" onclick="quickSearch('Narendra Modi Government')">🏛️ Modi Govt</button>
+                <button class="chip-btn" onclick="quickSearch('RBI Currency Demonetization')">💵 RBI & Notes</button>
+                <button class="chip-btn" onclick="quickSearch('Supreme Court India Judgment')">⚖️ Supreme Court</button>
+                <button class="chip-btn" onclick="quickSearch('Election Commission India')">🗳️ Elections</button>
+                <button class="chip-btn" onclick="quickSearch('WhatsApp Viral Rumors India Fact Check')">📱 Viral Fact
+                    Checks</button>
+                <button class="chip-btn" onclick="quickSearch('Indian Railways Vande Bharat')">🚆 Railways</button>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" id="tab-live" onclick="switchTab('live')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                </svg>
+                Real-Time Search Results (<span id="results-count-badge">0</span>)
+            </button>
+            <button class="tab-btn" id="tab-analyze" onclick="switchTab('analyze')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Deep Neural Scanner (Paste Custom Text)
+            </button>
+        </div>
+
+        <!-- Section 1: Real-Time Search Results -->
+        <section id="section-live" class="live-feed-section">
+            <div class="results-toolbar glass-card">
+                <div class="toolbar-left">
+                    <h3 id="current-search-heading">Showing live news for: <em>"India Breaking News"</em></h3>
+                    <span id="feed-last-updated" class="feed-timestamp">Updated just now</span>
+                </div>
+                <div class="filter-pills">
+                    <button class="pill-filter active" onclick="filterResults('all')">All Articles</button>
+                    <button class="pill-filter fake-pill" onclick="filterResults('fake')">🔴 Flagged
+                        Misinformation</button>
+                    <button class="pill-filter real-pill" onclick="filterResults('real')">🟢 Likely Verified</button>
+                </div>
+            </div>
+
+            <div id="live-feed-container" class="feed-grid">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- Section 2: Interactive Analysis (Deep Scanner) -->
+        <section id="section-analyze" class="dashboard-grid hidden">
+            <!-- Input Panel -->
+            <div class="card glass-card input-card">
+                <div class="card-header">
+                    <h2>📝 Input Claim or Article</h2>
+                    <span class="sub-label">Supports Hindi, Hinglish & English</span>
+                </div>
+
+                <div class="input-group">
+                    <textarea id="news-text"
+                        placeholder="Paste headline, WhatsApp forward, social media post, or Hindi text here... (e.g. 'यूनेस्को ने भारतीय राष्ट्रगान को सर्वश्रेष्ठ घोषित किया' or 'RBI demonetizes 500 note midnight')"></textarea>
+                    <div class="textarea-footer">
+                        <div id="live-lang-detect" class="lang-tag">Language: Auto-detecting...</div>
+                        <div class="quick-examples">
+                            <span>Try example:</span>
+                            <button class="chip-btn" onclick="setExample(1)">UNESCO Anthem</button>
+                            <button class="chip-btn" onclick="setExample(2)">RBI ₹500 Rumor</button>
+                            <button class="chip-btn" onclick="setExample(3)">ISRO Launch (Real)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Source Credibility Input -->
+                <div class="source-group">
+                    <div class="source-header">
+                        <label for="source-input">🌐 Source / Domain / Publisher (Optional Truth Check):</label>
+                        <span class="hint-text">Adjusts score against verified Indian media bias</span>
+                    </div>
+                    <div class="source-input-wrap">
+                        <input type="text" id="source-input"
+                            placeholder="e.g. thehindu.com, ndtv.com, postcard.news, whatsapp forward">
+                        <div class="source-quick-tags">
+                            <span onclick="setSource('thehindu.com')">The Hindu (Verified)</span>
+                            <span onclick="setSource('ndtv.com')">NDTV (Verified)</span>
+                            <span onclick="setSource('republicworld.com')">Republic (Biased)</span>
+                            <span onclick="setSource('postcard.news')">Postcard (Known Fake)</span>
+                            <span onclick="setSource('whatsapp forward')">WhatsApp Viral</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="analyze-btn" class="primary-btn" onclick="runAnalysis()">
+                    <span class="btn-text">⚡ Scan for Deception</span>
+                    <div class="spinner hidden" id="spinner"></div>
+                </button>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="card glass-card result-card" id="result-box">
+                <div class="card-header">
+                    <h2>🔍 Final Verdict</h2>
+                    <span id="res-timestamp" class="timestamp">Awaiting input</span>
+                </div>
+
+                <div class="result-placeholder" id="res-empty">
+                    <div class="radar-scan-anim"></div>
+                    <p>Enter text on the left and click <strong>Scan for Deception</strong> to run the XLM-RoBERTa +
+                        Sentiment + Source Credibility pipeline.</p>
+                </div>
+
+                <div class="result-content hidden" id="res-active">
+                    <!-- Top verdict banner -->
+                    <div class="verdict-banner" id="verdict-banner">
+                        <div class="verdict-pill" id="verdict-pill">VERDICT</div>
+                        <div class="verdict-meta">
+                            <div class="confidence-title">Confidence Level</div>
+                            <div class="confidence-val" id="confidence-val">94.2%</div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Gauge Visualization -->
+                    <div class="gauge-container">
+                        <svg viewBox="0 0 200 110" class="gauge-svg">
+                            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.08)"
+                                stroke-width="16" stroke-linecap="round" />
+                            <path id="gauge-arc" d="M 20 100 A 80 80 0 0 1 180 100" fill="none"
+                                stroke="url(#gaugeGradient)" stroke-width="16" stroke-linecap="round"
+                                stroke-dasharray="251.2" stroke-dashoffset="251.2" />
+                            <defs>
+                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#10b981" />
+                                    <stop offset="50%" stop-color="#f59e0b" />
+                                    <stop offset="100%" stop-color="#ef4444" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="gauge-center-info">
+                            <span class="gauge-number" id="gauge-num">0%</span>
+                            <span class="gauge-desc">Fake Likelihood</span>
+                        </div>
+                    </div>
+
+                    <!-- Metric Breakdown Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <span class="stat-label">Source Credibility</span>
+                            <span class="stat-value" id="val-source-cred">Neutral (0.50)</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Emotional Tone</span>
+                            <span class="stat-value" id="val-sentiment">Neutral 😐</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Script / Format</span>
+                            <span class="stat-value" id="val-language">Hindi 🇮🇳</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">🛡️ Risk Level</span>
+                            <span class="stat-value" id="val-risk-level">Standard Text Analysis</span>
+                        </div>
+                        <div class="stat-box" style="grid-column: span 2;">
+                            <span class="stat-label">🚨 Viral Hoax / Forward Detection</span>
+                            <span class="stat-value" id="val-hoax-flags">None detected</span>
+                        </div>
+                    </div>
+
+                    <!-- Raw Model Weights Accordion -->
+                    <details class="feature-accordion">
+                        <summary>🔬 Inspect Neural Probability Distribution</summary>
+                        <div class="feature-table">
+                            <div class="feat-row"><span>XLM-RoBERTa Fake Probability:</span><strong
+                                    id="feat-xlm-fake">0%</strong></div>
+                            <div class="feat-row"><span>XLM-RoBERTa Real Probability:</span><strong
+                                    id="feat-xlm-real">0%</strong></div>
+                            <div class="feat-row"><span>Sentiment Anger/Negative Emotion:</span><strong
+                                    id="feat-senti-neg">0%</strong></div>
+                            <div class="feat-row"><span>Sentiment Neutral Balance:</span><strong
+                                    id="feat-senti-neu">0%</strong></div>
+                            <div class="feat-row"><span>Sentiment Positive/Euphoric:</span><strong
+                                    id="feat-senti-pos">0%</strong></div>
+                            <div class="feat-row"><span>Source Bias Shift Applied:</span><strong
+                                    id="feat-source-shift">0.00</strong></div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p><strong>SatyaCheck India Edition</strong> • XLM-RoBERTa Multilingual Backbone • Indian News Bias Lookup
+            </p>
+            <p class="muted"></p>
+        </div>
+    </footer>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

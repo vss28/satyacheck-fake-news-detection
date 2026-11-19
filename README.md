@@ -10,8 +10,8 @@ The project has two parts with different contributors:
 
 | Contributor | Contribution |
 | --- | --- |
-| Vedant Shelke | Developed the Indian news extension: SatyaCheck, its FastAPI backend, and live news monitoring. |
-| Shubhan Telnag, Vaishnavi Muley, and Arin Govekar | Contributed to the original US news detector, which has a more limited feature set. |
+| Vedant Shelke, and Arin Govekar | Developed the Indian news extension: SatyaCheck, its FastAPI backend, and live news monitoring. |
+| Shubhan Telnag, Vaishnavi Muley | Contributed to the original US news detector, which has a more limited feature set. |
 
 ## What it includes
 
